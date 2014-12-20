@@ -1,6 +1,7 @@
 window.compliments = {} if not window.compliments?
 
 lastData = null
+isPlaying = false
 
 window.compliments.handleFrame = (frame, width, height) ->
   data = computeAverageData frame, width, height
@@ -12,15 +13,18 @@ window.compliments.handleFrame = (frame, width, height) ->
   for x, i in lastData
     difference += Math.abs(x - data[i])
   percentDiff = difference / data.length
+  if percentDiff > 0.01
+    handleChange()
   lastData = data
   return
 
 computeAverageData = (frame, width, height) ->
-  reg = 20
+  reg = Math.ceil width / 50
   # Compute the average color for each square region
   averages = []
-  [x, y] = [0, 0]
+  y = 0
   while y < height
+    x = 0
     while x < width
       a = averageRegion frame, x, y, width, height, reg
       averages.push n for n in a
@@ -32,15 +36,24 @@ averageRegion = (frame, x, y, width, height, regionSize) ->
   sampleCount = 0
   [r, g, b] = [0, 0, 0]
   for i in [0..regionSize]
-    break if x + i >= width
+    useX = x + i
+    break if useX >= width
     for j in [0..regionSize]
-      break if y + j >= height
-      r += frame[x * 3 + y * 3 * width]
-      g += frame[x * 3 + y * 3 * width + 1]
-      b += frame[x * 3 + y * 3 * width + 2]
+      useY = y + j
+      break if useY >= height
+      r += frame[useX * 3 + useY * 3 * width]
+      g += frame[useX * 3 + useY * 3 * width + 1]
+      b += frame[useX * 3 + useY * 3 * width + 2]
       ++sampleCount
   sampleCount *= 256
   r /= sampleCount
   g /= sampleCount
   b /= sampleCount
   return [r, g, b]
+
+handleChange = ->
+  return if isPlaying
+  isPlaying = true
+  window.compliments.playCompliment ->
+    isPlaying = false
+
