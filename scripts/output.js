@@ -24,6 +24,7 @@
       }
       stopFunc = null;
       button.innerHTML = 'Start';
+      button.disabled = false;
       return running = false;
     } else {
       button.innerHTML = 'Waiting...';
@@ -35,7 +36,7 @@
           button.innerHTML = 'Stop';
           running = true;
         }
-        return delete button.disabled;
+        return button.disabled = false;
       });
     }
   };
@@ -85,10 +86,9 @@
 
   lastData = null;
 
-  window.compliments.handleFrame = function(frame) {
-    var data, difference, height, i, percentDiff, width, x, _i, _len, _ref;
-    _ref = document.getElementById('video'), width = _ref.videoWidth, height = _ref.videoHeight;
-    data = computeAverageData(frame);
+  window.compliments.handleFrame = function(frame, width, height) {
+    var data, difference, i, percentDiff, x, _i, _len;
+    data = computeAverageData(frame, width, height);
     if (lastData == null) {
       lastData = data;
       return;
@@ -99,28 +99,26 @@
       difference += Math.abs(x - data[i]);
     }
     percentDiff = difference / data.length;
-    console.log('percent difference:', percentDiff);
     lastData = data;
   };
 
   computeAverageData = function(frame, width, height) {
-    var a, averages, reg, x, y, _i, _len, _ref, _results;
-    reg = 5;
+    var a, averages, n, reg, x, y, _i, _len, _ref;
+    reg = 20;
     averages = [];
     _ref = [0, 0], x = _ref[0], y = _ref[1];
-    _results = [];
     while (y < height) {
       while (x < width) {
         a = averageRegion(frame, x, y, width, height, reg);
         for (_i = 0, _len = a.length; _i < _len; _i++) {
-          x = a[_i];
-          averages.push(x);
+          n = a[_i];
+          averages.push(n);
         }
         x += reg;
       }
-      _results.push(y += reg);
+      y += reg;
     }
-    return _results;
+    return averages;
   };
 
   averageRegion = function(frame, x, y, width, height, regionSize) {
@@ -231,7 +229,7 @@
       }
       ctx.clearRect(0, 0, width, height);
       ctx.drawImage(v, 0, 0, width, height);
-      return cb(ctx.getImageData(0, 0, width, height).data);
+      return cb(ctx.getImageData(0, 0, width, height).data, width, height);
     };
     intervalId = setInterval(func, 100);
     return function() {

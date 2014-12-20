@@ -2,9 +2,8 @@ window.compliments = {} if not window.compliments?
 
 lastData = null
 
-window.compliments.handleFrame = (frame) ->
-  {videoWidth: width, videoHeight: height} = document.getElementById 'video'
-  data = computeAverageData frame
+window.compliments.handleFrame = (frame, width, height) ->
+  data = computeAverageData frame, width, height
   if not lastData?
     lastData = data
     return
@@ -13,21 +12,21 @@ window.compliments.handleFrame = (frame) ->
   for x, i in lastData
     difference += Math.abs(x - data[i])
   percentDiff = difference / data.length
-  console.log 'percent difference:', percentDiff
   lastData = data
   return
 
 computeAverageData = (frame, width, height) ->
-  reg = 5
+  reg = 20
   # Compute the average color for each square region
   averages = []
   [x, y] = [0, 0]
   while y < height
     while x < width
       a = averageRegion frame, x, y, width, height, reg
-      averages.push x for x in a
+      averages.push n for n in a
       x += reg
     y += reg
+  return averages
 
 averageRegion = (frame, x, y, width, height, regionSize) ->
   sampleCount = 0

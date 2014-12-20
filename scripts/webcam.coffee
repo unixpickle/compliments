@@ -50,7 +50,7 @@ window.compliments.getFrames = (v, cb) ->
       return
     ctx.clearRect 0, 0, width, height
     ctx.drawImage v, 0, 0, width, height
-    cb ctx.getImageData(0, 0, width, height).data
+    cb ctx.getImageData(0, 0, width, height).data, width, height
   intervalId = setInterval func, 100
   return ->
     if intervalId?

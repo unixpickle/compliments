@@ -12,6 +12,7 @@ window.compliments.startStop = ->
     stopFunc?()
     stopFunc = null
     button.innerHTML = 'Start'
+    button.disabled = false
     running = false
   else
     button.innerHTML = 'Waiting...'
@@ -22,7 +23,7 @@ window.compliments.startStop = ->
       else
         button.innerHTML = 'Stop'
         running = true
-      delete button.disabled
+      button.disabled = false
 
 start = (cb) ->
   window.compliments.getStream (err, st) ->
