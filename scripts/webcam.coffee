@@ -48,9 +48,9 @@ window.compliments.getFrames = (v, cb) ->
         clearInterval intervalId
         intervalId = null
       return
-    context.clearRect 0, 0, width, height
-    context.drawImage v, 0, 0, width, height
-    cb context.getImageData(0, 0, w, h).data
+    ctx.clearRect 0, 0, width, height
+    ctx.drawImage v, 0, 0, width, height
+    cb ctx.getImageData(0, 0, width, height).data
   intervalId = setInterval func, 100
   return ->
     if intervalId?
