@@ -1,7 +1,11 @@
 window.compliments = {} if not compliments?
 
+files = ("audio/output#{x}.wav" for x in [0..12])
+idx = 0
+
 window.compliments.playCompliment = (endCb) ->
-  a = new Audio 'test.wav'
+  idx = 0 if idx is files.length
+  a = new Audio files[idx]
   a.play()
-  setTimeout endCb, 2000
+  setTimeout endCb, 3000
 
